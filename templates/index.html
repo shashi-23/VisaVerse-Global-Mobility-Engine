@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VisaVerse | 2025 Global Mobility</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0f19; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero-section { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid #334155; padding: 60px 0; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #475569; border-radius: 16px; backdrop-filter: blur(12px); }
+        .score-circle { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; }
+        .step-item { border-left: 3px solid #3b82f6; padding-left: 20px; margin-bottom: 20px; position: relative; }
+    </style>
+</head>
+<body>
+
+<div class="hero-section text-center">
+    <h1 class="display-4 fw-bold">VisaVerse <span class="text-primary">Navigator</span></h1>
+    <p class="lead text-secondary">Real-time 2025 Global Mobility Intelligence</p>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="glass-card p-4">
+                <h5 class="mb-3">Mobility Settings</h5>
+                <form id="visaForm">
+                    <label class="small text-secondary">TARGET COUNTRY</label>
+                    <select id="country" class="form-select bg-dark text-white mb-3">
+                        <option value="USA">United States (2025 Rules)</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Canada">Canada</option>
+                    </select>
+                    
+                    <label class="small text-secondary">PROFESSIONAL RESUME (PDF)</label>
+                    <input type="file" id="resume" class="form-control bg-dark text-white mb-4" required>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">ANALYZE ELIGIBILITY</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div id="loader" class="text-center d-none">
+                <div class="spinner-border text-primary mb-3"></div>
+                <p>Consulting 2025 Global Immigration Databases...</p>
+            </div>
+
+            <div id="results" class="glass-card p-4 d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Analysis: <span id="outCountry" class="text-primary"></span></h3>
+                    <div class="score-circle" id="outScore">0%</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="fw-bold text-info">RECOMMENDED VISAS</p>
+                        <ul id="outVisas" class="small"></ul>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="fw-bold text-danger">PROFILE GAPS</p>
+                        <ul id="outGaps" class="small"></ul>
+                    </div>
+                </div>
+
+                <hr class="my-4 border-secondary">
+                <h5>Mobility Roadmap</h5>
+                <div id="outRoadmap" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('visaForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        document.getElementById('loader').classList.remove('d-none');
+        document.getElementById('results').classList.add('d-none');
+
+        const formData = new FormData();
+        formData.append('country', document.getElementById('country').value);
+        formData.append('resume', document.getElementById('resume').files[0]);
+
+        const response = await fetch('/analyze', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        document.getElementById('loader').classList.add('d-none');
+        document.getElementById('results').classList.remove('d-none');
+
+        // Populate Data
+        document.getElementById('outCountry').innerText = document.getElementById('country').value;
+        document.getElementById('outScore').innerText = data.score + "%";
+        document.getElementById('outVisas').innerHTML = data.qualified_visas.map(v => `<li>${v}</li>`).join('');
+        document.getElementById('outGaps').innerHTML = data.missing_items.map(g => `<li>${g}</li>`).join('');
+        document.getElementById('outRoadmap').innerHTML = data.roadmap_steps.map((s, i) => 
+            `<div class="step-item"><span class="badge bg-primary mb-2">Step ${i+1}</span><p>${s}</p></div>`
+        ).join('');
+    };
+</script>
+</body>
+</html>
