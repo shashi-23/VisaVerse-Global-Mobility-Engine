@@ -38,7 +38,7 @@ VisaVerse Navigator is a full-stack web application that performs a real-time **
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/yourusername/visaverse-navigator.git](https://github.com/yourusername/visaverse-navigator.git)
+    git clone https://github.com/shashi-23/VisaVerse-Global-Mobility-Engine.git
     cd visaverse-navigator
     ```
 
